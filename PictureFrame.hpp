@@ -24,11 +24,74 @@
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_NeoMatrix.h>
 
-Adafruit_NeoMatrix pictureFrame = Adafruit_NeoMatrix(
-                                    17, // width
-                                    13, // height
-                                    6,  // pin
-                                    NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
-                                    NEO_MATRIX_ROWS    + NEO_MATRIX_ZIGZAG,
-                                    NEO_GRB            + NEO_KHZ800);
+#include "Screensaver.hpp"
+
+#define BRIGHTNESS 30
+
+// The pin the NeoPixels are on
+#define SIGNAL_PIN 6
+
+// The pin connected to the MOSFET gate
+#define ENABLE_LED_PIN 7
+
+class PictureFrame {
+  public:
+
+    PictureFrame() :
+      _matrix(
+        17, // width
+        13, // height
+        SIGNAL_PIN,  // control pin
+        NEO_MATRIX_TOP     + NEO_MATRIX_LEFT +
+        NEO_MATRIX_ROWS    + NEO_MATRIX_ZIGZAG,
+        NEO_GRB            + NEO_KHZ800),
+      _saver(_matrix),
+      _enabled(true)
+    {
+      pinMode(ENABLE_LED_PIN, OUTPUT);
+
+      disable();
+    }
+
+    Adafruit_NeoMatrix& matrix() {
+      return _matrix;
+    }
+
+    void screenSaverUpdate() {
+      _saver.update();
+    }
+
+    void disable() {
+      if (!_enabled) return;
+
+      digitalWrite(SIGNAL_PIN, LOW);
+      pinMode(SIGNAL_PIN, INPUT);
+
+      digitalWrite(ENABLE_LED_PIN, LOW);
+
+      _enabled = false;
+    }
+
+    void enable() {
+      if (_enabled) return;
+
+      // Set pinMode - ctor does too but don't know when that runs
+      pinMode(ENABLE_LED_PIN, OUTPUT);
+      digitalWrite(ENABLE_LED_PIN, HIGH);
+
+      // begin() method sets pinMode to OUTPUT
+      _matrix.begin();
+      _matrix.setBrightness(BRIGHTNESS);
+      _matrix.clear();
+      _matrix.show();
+
+      _enabled = true;
+    }
+
+  private:
+    Adafruit_NeoMatrix _matrix;
+    Screensaver _saver;
+    bool _enabled;
+};
+
 #endif

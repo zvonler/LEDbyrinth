@@ -253,6 +253,7 @@ class BoardController {
         purple = matrix.Color(90, 0, 90);
         off = matrix.Color(0, 0, 0);
         blue = matrix.Color(0, 0, 80);
+        cyan = matrix.Color(0, 45, 90);
       }
 
       uint32_t ballColor() {
@@ -267,9 +268,9 @@ class BoardController {
         switch (cell) {
           case Cell_WarpBase   : return purple;
           case Cell_Wall       : return white;
-          case Cell_Wall_Red   : return red;
+          case Cell_Wall_Purple   : return purple;
           case Cell_Trap       : return red;
-          case Cell_Wall_Orange: return orange;
+          case Cell_Wall_Cyan: return cyan;
           case Cell_Exit       : return green;
 
           case Cell_Empty      :
@@ -284,6 +285,7 @@ class BoardController {
       uint32_t purple;
       uint32_t off;
       uint32_t blue;
+      uint32_t cyan;
     };
 
     bool validLocation(int x, int y) {
@@ -297,8 +299,8 @@ class BoardController {
           case Cell_Exit:
             return true;
           case Cell_Wall:
-          case Cell_Wall_Red:
-          case Cell_Wall_Orange:
+          case Cell_Wall_Purple:
+          case Cell_Wall_Cyan:
           default:   // Unknown cells treated like walls
             return false;
         }
@@ -434,6 +436,5 @@ class BoardController {
     }
 };
 
-BoardController controller(pictureFrame, accelerometer, levels);
 
 #endif

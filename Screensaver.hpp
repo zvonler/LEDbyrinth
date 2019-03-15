@@ -101,6 +101,4 @@ class Screensaver {
     float _phase = 0.0;
 };
 
-Screensaver globalSaver(pictureFrame);
-
 #endif

@@ -16,67 +16,61 @@
 */
 
 #include "BoardController.hpp"
+#include "Orientation.hpp"
 #include "Screensaver.hpp"
 
 #include <avr/sleep.h>
 #include <avr/wdt.h>
 
-#define BRIGHTNESS 30
+PictureFrame pictureFrame;
+BoardController controller(pictureFrame.matrix(), accelerometer, levels);
 
 void setup() {
   // Required because powering AREF pin - analogRead will short otherwise
   analogReference(EXTERNAL);
 
   pinMode(LED_BUILTIN, OUTPUT);
-
   Serial.begin(9600);
 
-  pictureFrame.begin();
-  pictureFrame.setBrightness(BRIGHTNESS);
-  pictureFrame.clear();
-
+  pictureFrame.enable();
   controller.reset();
 }
 
 uint32_t lastBoardChangeTm = 0;
-uint32_t screensaverTimeout = 30000; // millis
-uint32_t sleepTimeout = 300000; // millis
+uint32_t screensaverTimeout = 10000; // millis
+uint32_t sleepTimeout = 20000; // millis
 
 void loop() {
 
-  // put your main code here, to run repeatedly:
   bool didChange = controller.update();
   if (didChange) {
     lastBoardChangeTm = millis();
-    return;
-  }
 
-  if (millis() - lastBoardChangeTm > screensaverTimeout) {
-    bool accelerationChanged = false;
-    float startingX = accelerometer.readXAxis();
-    float startingY = accelerometer.readYAxis();
-    float startingZ = accelerometer.readZAxis();
+  } else if (millis() - lastBoardChangeTm > screensaverTimeout) {
+    Orientation orientation(0.5);
 
-    const float threshold = 0.5;
-
-    while (!accelerationChanged) {
-      if (millis() - lastBoardChangeTm > sleepTimeout) {
-        pictureFrame.clear();
-        pictureFrame.show();
-        powerSave();
+    while (!orientation.changed()) {
+      if (millis() - lastBoardChangeTm < sleepTimeout) {
+        pictureFrame.screenSaverUpdate();
       } else {
-        globalSaver.update();
+        // Deep sleep
+        pictureFrame.disable();
+        while (!orientation.changed()) {
+          delay(2000);
+          // Disabled powerSave while testing FET
+          //        powerSave();
+        }
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(500);
+        pictureFrame.enable();
+        digitalWrite(LED_BUILTIN, LOW);
+        break;
       }
-
-      accelerationChanged = fabs(accelerometer.readXAxis() - startingX) > threshold ||
-                            fabs(accelerometer.readYAxis() - startingY) > threshold ||
-                            fabs(accelerometer.readZAxis() - startingZ) > threshold;
     }
     controller.setLevel(1);
     lastBoardChangeTm = millis();
   }
 }
-
 
 /*
    Power save code from http://www.gammon.com.au/power
@@ -84,7 +78,7 @@ void loop() {
 
 // watchdog intervals
 // sleep bit patterns for WDTCSR
-enum 
+enum
 {
   WDT_16_MS  =  0b000000,
   WDT_32_MS  =  0b000001,
@@ -96,7 +90,7 @@ enum
   WDT_2_SEC  =  0b000111,
   WDT_4_SEC  =  0b100000,
   WDT_8_SEC  =  0b100001,
- };  // end of WDT intervals enum
+};  // end of WDT intervals enum
 
 // watchdog interrupt
 ISR (WDT_vect)
@@ -138,4 +132,3 @@ void powerSave() {
   PRR = old_PRR;
   ADCSRA = old_ADCSRA;
 }
-

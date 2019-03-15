@@ -24,8 +24,8 @@ const byte Cell_Empty = 0;
 const byte Cell_Wall = 1;
 const byte Cell_Trap = 2;
 const byte Cell_Exit = 3;
-const byte Cell_Wall_Red = 4;
-const byte Cell_Wall_Orange = 5;
+const byte Cell_Wall_Purple = 4;
+const byte Cell_Wall_Cyan = 5;
 
 const byte Cell_WarpBase = 20;
 // Cell values from WarpBase to PointerBase are used to warp to levels.
@@ -283,23 +283,23 @@ const byte level0_columnIndices[] PROGMEM = {
   2, 6, 10, 14,
   0, 2, 14, 16,
   2, 6, 10, 14,
-  1, 2, 4, 5, 6, 7, 9, 10, 11, 13, 14
+  1, 2, 4, 5, 6, 7, 9, 10, 11, 14, 15
 };
 const byte level0_values[] PROGMEM = {
   Cell_Wall, Cell_Wall, Cell_Wall, Cell_Wall, Cell_Wall, Cell_Wall, Cell_Wall,
-  Cell_Wall_Orange, // V
+  Cell_Wall_Cyan, // V
   Cell_WarpBase + 1, Cell_WarpBase + 2, Cell_WarpBase + 3, Cell_WarpBase + 4,
-  Cell_Wall_Red, // X
+  Cell_Wall_Purple, // X
   Cell_WarpBase + 10, Cell_WarpBase + 5,
-  Cell_Wall_Orange, // V
+  Cell_Wall_Cyan, // V
   Cell_WarpBase + 9, Cell_WarpBase + 8, Cell_WarpBase + 7, Cell_WarpBase + 6,
   Cell_Wall,
-  Cell_Wall_Red, // X
-  Cell_Wall_Orange, // V
+  Cell_Wall_Purple, // X
+  Cell_Wall_Cyan, // V
   Cell_Wall, Cell_Wall, Cell_Wall,
-  Cell_Wall_Orange, // V
+  Cell_Wall_Cyan, // V
   Cell_Wall, Cell_Wall,
-  Cell_Wall_Orange, // V
+  Cell_Wall_Cyan, // V
   Cell_Wall
 };
 
