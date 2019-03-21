@@ -37,8 +37,8 @@ void setup() {
 }
 
 uint32_t lastBoardChangeTm = 0;
-uint32_t screensaverTimeout = 10000; // millis
-uint32_t sleepTimeout = 20000; // millis
+uint32_t screensaverTimeout = 30000; // millis
+uint32_t sleepTimeout = 300000; // millis
 
 void loop() {
 
@@ -56,14 +56,9 @@ void loop() {
         // Deep sleep
         pictureFrame.disable();
         while (!orientation.changed()) {
-          delay(2000);
-          // Disabled powerSave while testing FET
-          //        powerSave();
+          powerSave();
         }
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(500);
         pictureFrame.enable();
-        digitalWrite(LED_BUILTIN, LOW);
         break;
       }
     }

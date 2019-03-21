@@ -141,6 +141,7 @@ class BoardController {
           switch (newCell) {
             case Cell_Exit:
               animateExit();
+              _trapCount = 0; // Reset the easter egg
               _levelIndex = max(1, (_levelIndex + 1) % _levels.count); // Prevent exiting to level 0 from the last
               reset();
               break;
